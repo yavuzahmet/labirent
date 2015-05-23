@@ -1,0 +1,401 @@
+package staj_proje;
+
+
+
+import java.util.Random;
+import java.util.Stack;
+//Created by AHMET on 23.05.2015.
+public class game_main 
+{
+	 int[][] satranc_tahtasi_ilk_hal=new int[8][8];
+	 int[][] satranc_tahtasi=new int[8][8];							
+	 int satir=0;														
+	 int sutun=0;														
+	 int siyah_pul_sayisi;											
+	 int cikis_yolu_sayisi=0;											//bulundugumuz hucreden kac farklı sekilde sonraki hucrelere geceriz>>cikis_yolu_sayisi
+																		//bunun degeri 1'den buyuk ise bulundugumuz hucre dugum noktasidir
+																		//bulundugumuz hucreden baska hucreye hareket edemezsek enson dugum noktasina doneriz
+	 Stack<Integer> stack_dugum_satir=new Stack<Integer>();				//dugum noktasinin satir numarasini tutar
+	 Stack<Integer> stack_dugum_sutun=new Stack<Integer>();				//dugum noktasinin sutun numarasini tutar
+	 Random rastgele_sayi=new Random();								
+	 Stack<Integer> stack_cikis_yolum_satir=new Stack<Integer>();		//hedefe giderken gececegimiz hücrelerin satir numarasini tutar
+	 Stack<Integer> stack_cikis_yolum_sutun=new Stack<Integer>();		//hedefe giderken gececegimiz hücrelerin sutun numarasini tutar
+	 String[] dizi_cikis_yolum;											//cikis yolunu hücre isimleri ile bu dizide tutuyoruz(A1,H8 gibi)
+	
+	public static void main(String[] args) 
+	{		// bos hucre => 0   beyaz pul => 1		siyah pul => -1     ile ifade edildi
+		game_main cagir=new game_main();
+		cagir.basla();
+	}
+	
+	public void basla()
+	{
+		satranc_tahtasi_ilk_hal[7][0]=1;
+		satranc_tahtasi[7][0]=1;//......................................beyaz pulun başlangıçta bulunduğu hücreyi=>satranc_tahtasi[7][0]->(A1) "1" ile işratledik
+		     
+		satir=7;//hareketimize beyaz pulun oldugu noktadan basliyoruz => satranc_tahtasi[7][0]
+		sutun=0;
+		siyah_pul_yerlestir();
+		
+		
+				// satran tahtasi uzerinde pullarin baslangictaki yerlesimi
+		for(satir=0;satir<8;satir++)
+		{
+			for(sutun=0;sutun<8;sutun++)
+			{
+				if(satranc_tahtasi_ilk_hal[satir][sutun]==1)
+					System.out.print(">>"+"    ");//beyaz pul
+				else if(satranc_tahtasi_ilk_hal[satir][sutun]==0)
+					System.out.print(" *"+"    ");//bos hucre
+				else
+					System.out.print("SP"+"    ");//siyah pul
+			}
+			System.out.println("\n");
+		}		
+		System.out.println("--------------------------------------\n");		
+		
+						
+		
+		int i=0;
+		dizi_cikis_yolum=new String[stack_cikis_yolum_satir.size()];    //bizi hedefe ulastıran yolun satir ve sutun bilgilerini stack'ta tutuyoruz
+		while(!stack_cikis_yolum_satir.empty())							//simdi bu yolu, hücre isimlerini vererek bir diziye atıyoruz			
+		{
+			if(!stack_cikis_yolum_satir.empty())        				//stack bos ise karsilastirma yapamaz 
+			if(stack_cikis_yolum_satir.peek()==0)
+			{
+				stack_cikis_yolum_satir.pop();
+				switch(stack_cikis_yolum_sutun.pop())
+				{
+				case 0:dizi_cikis_yolum[i]="A8";i++;break;
+				case 1:dizi_cikis_yolum[i]="B8";i++;break;
+				case 2:dizi_cikis_yolum[i]="C8";i++;break;
+				case 3:dizi_cikis_yolum[i]="D8";i++;break;
+				case 4:dizi_cikis_yolum[i]="E8";i++;break;
+				case 5:dizi_cikis_yolum[i]="F8";i++;break;
+				case 6:dizi_cikis_yolum[i]="G8";i++;break;
+				case 7:dizi_cikis_yolum[i]="H8";i++;break;			
+				}
+			}
+			
+			if(!stack_cikis_yolum_satir.empty())
+			if(stack_cikis_yolum_satir.peek()==1)
+			{
+				stack_cikis_yolum_satir.pop();
+				switch(stack_cikis_yolum_sutun.pop())
+				{
+				case 0:dizi_cikis_yolum[i]="A7";i++;break;
+				case 1:dizi_cikis_yolum[i]="B7";i++;break;
+				case 2:dizi_cikis_yolum[i]="C7";i++;break;
+				case 3:dizi_cikis_yolum[i]="D7";i++;break;
+				case 4:dizi_cikis_yolum[i]="E7";i++;break;
+				case 5:dizi_cikis_yolum[i]="F7";i++;break;
+				case 6:dizi_cikis_yolum[i]="G7";i++;break;
+				case 7:dizi_cikis_yolum[i]="H7";i++;break;				
+				}
+			}
+			
+			if(!stack_cikis_yolum_satir.empty())
+			if(stack_cikis_yolum_satir.peek()==2)
+			{
+				stack_cikis_yolum_satir.pop();
+				switch(stack_cikis_yolum_sutun.pop())
+				{
+				case 0:dizi_cikis_yolum[i]="A6";i++;break;
+				case 1:dizi_cikis_yolum[i]="B6";i++;break;
+				case 2:dizi_cikis_yolum[i]="C6";i++;break;
+				case 3:dizi_cikis_yolum[i]="D6";i++;break;
+				case 4:dizi_cikis_yolum[i]="E6";i++;break;
+				case 5:dizi_cikis_yolum[i]="F6";i++;break;
+				case 6:dizi_cikis_yolum[i]="G6";i++;break;
+				case 7:dizi_cikis_yolum[i]="H6";i++;break;				
+				}
+			}
+			
+			if(!stack_cikis_yolum_satir.empty())
+			if(stack_cikis_yolum_satir.peek()==3)
+			{
+				stack_cikis_yolum_satir.pop();
+				switch(stack_cikis_yolum_sutun.pop())
+				{
+				case 0:dizi_cikis_yolum[i]="A5";i++;break;
+				case 1:dizi_cikis_yolum[i]="B5";i++;break;
+				case 2:dizi_cikis_yolum[i]="C5";i++;break;
+				case 3:dizi_cikis_yolum[i]="D5";i++;break;
+				case 4:dizi_cikis_yolum[i]="E5";i++;break;
+				case 5:dizi_cikis_yolum[i]="F5";i++;break;
+				case 6:dizi_cikis_yolum[i]="G5";i++;break;
+				case 7:dizi_cikis_yolum[i]="H5";i++;break;				
+				}
+			}
+			
+			if(!stack_cikis_yolum_satir.empty())
+			if(stack_cikis_yolum_satir.peek()==4)
+			{
+				stack_cikis_yolum_satir.pop();
+				switch(stack_cikis_yolum_sutun.pop())
+				{
+				case 0:dizi_cikis_yolum[i]="A4";i++;break;
+				case 1:dizi_cikis_yolum[i]="B4";i++;break;
+				case 2:dizi_cikis_yolum[i]="C4";i++;break;
+				case 3:dizi_cikis_yolum[i]="D4";i++;break;
+				case 4:dizi_cikis_yolum[i]="E4";i++;break;
+				case 5:dizi_cikis_yolum[i]="F4";i++;break;
+				case 6:dizi_cikis_yolum[i]="G4";i++;break;
+				case 7:dizi_cikis_yolum[i]="H4";i++;break;				
+				}
+			}
+			
+			if(!stack_cikis_yolum_satir.empty())
+			if(stack_cikis_yolum_satir.peek()==5)
+			{
+				stack_cikis_yolum_satir.pop();
+				switch(stack_cikis_yolum_sutun.pop())
+				{
+				case 0:dizi_cikis_yolum[i]="A3";i++;break;
+				case 1:dizi_cikis_yolum[i]="B3";i++;break;
+				case 2:dizi_cikis_yolum[i]="C3";i++;break;
+				case 3:dizi_cikis_yolum[i]="D3";i++;break;
+				case 4:dizi_cikis_yolum[i]="E3";i++;break;
+				case 5:dizi_cikis_yolum[i]="F3";i++;break;
+				case 6:dizi_cikis_yolum[i]="G3";i++;break;
+				case 7:dizi_cikis_yolum[i]="H3";i++;break;				
+				}
+			}
+			
+			if(!stack_cikis_yolum_satir.empty())
+			if(stack_cikis_yolum_satir.peek()==6)
+			{
+				stack_cikis_yolum_satir.pop();
+				switch(stack_cikis_yolum_sutun.pop())
+				{
+				case 0:dizi_cikis_yolum[i]="A2";i++;break;
+				case 1:dizi_cikis_yolum[i]="B2";i++;break;
+				case 2:dizi_cikis_yolum[i]="C2";i++;break;
+				case 3:dizi_cikis_yolum[i]="D2";i++;break;
+				case 4:dizi_cikis_yolum[i]="E2";i++;break;
+				case 5:dizi_cikis_yolum[i]="F2";i++;break;
+				case 6:dizi_cikis_yolum[i]="G2";i++;break;
+				case 7:dizi_cikis_yolum[i]="H2";i++;break;				
+				}
+			}
+			
+			if(!stack_cikis_yolum_satir.empty())
+			if(stack_cikis_yolum_satir.peek()==7)
+			{
+				stack_cikis_yolum_satir.pop();
+				switch(stack_cikis_yolum_sutun.pop())
+				{
+				case 0:dizi_cikis_yolum[i]="A1";i++;break;
+				case 1:dizi_cikis_yolum[i]="B1";i++;break;
+				case 2:dizi_cikis_yolum[i]="C1";i++;break;
+				case 3:dizi_cikis_yolum[i]="D1";i++;break;
+				case 4:dizi_cikis_yolum[i]="E1";i++;break;
+				case 5:dizi_cikis_yolum[i]="F1";i++;break;
+				case 6:dizi_cikis_yolum[i]="G1";i++;break;
+				case 7:dizi_cikis_yolum[i]="H1";i++;break;				
+				}
+			}
+			
+		}
+		
+		// tahta uzerindeki hareketimiz
+		for(satir=0;satir<8;satir++)
+		{
+			for(sutun=0;sutun<8;sutun++)
+			{
+				if(satranc_tahtasi[satir][sutun]==1)
+					System.out.print(">>"+"    ");
+				else if(satranc_tahtasi[satir][sutun]==0)
+					System.out.print(" *"+"    ");
+				else
+					System.out.print("SP"+"    ");
+				
+			}
+			System.out.println("\n");
+		}		
+		//cikis yolunu hücre isimleri ile yazdiralim
+		for(i=dizi_cikis_yolum.length-1;i>=0;i--)
+		{
+			
+			System.out.print(dizi_cikis_yolum[i] +" ");
+			
+		}
+	}
+	
+	public void siyah_pul_yerlestir()
+	{
+		//siyah pullari da yerlestirelim
+				siyah_pul_sayisi=rastgele_sayi.nextInt(8)+1;//..................1'den 8'e kadar olan sayılardan rastgele birini "siyah_pul_sayisi" değişkenine atadık		
+				for(int sayac=1;sayac<=siyah_pul_sayisi;sayac++)
+				{
+					satir=rastgele_sayi.nextInt(8);						//satir ve sutun değişkenlerinin değerleri en fazla 7 değerini olabilir
+					sutun=rastgele_sayi.nextInt(8);
+					if((satir==7 && sutun==0) || (satir==0 && sutun==7))// satranc_tahtasi[7][0]->(A1)  satranc_tahtasi[0][7]->(H8) de siyah pul olamaz
+						sayac--;       									//bu durumda "satir ve sutun" değerleri icin yeni sayi uretiriz			
+					else
+					{
+						satranc_tahtasi_ilk_hal[satir][sutun]=-1;
+						satranc_tahtasi[satir][sutun]=-1;				//siyah pulun yerleştiği hücreye -1 değerini verdik	
+					}
+											
+				}
+				satir=7;//hedefe_git() fonksiyonundaki hareketimize beyaz pulun oldugu noktadan basliyoruz =>satranc_tahtasi[7][0]>>(A1) dan
+				sutun=0;
+				if(!hedefe_git())		//A1'den H8' giden hic yol yoksa siyah pulların yerlesimini tekrar yapıyoruz
+					siyah_pul_yerlestir();
+	}
+	
+	public boolean hedefe_git()
+	{		
+		if(sutun<7)   //saga gidebilir mi?
+			if(satranc_tahtasi[satir][sutun+1]!=-1 && satranc_tahtasi[satir][sutun+1]!=1)
+				cikis_yolu_sayisi++;
+		if(sutun>0)  //sola gidebilir mi?
+			if(satranc_tahtasi[satir][sutun-1]!=-1 && satranc_tahtasi[satir][sutun-1]!=1)
+				cikis_yolu_sayisi++;
+		if(satir<7)  //asagi gidebilir mi?
+			if(satranc_tahtasi[satir+1][sutun]!=-1 && satranc_tahtasi[satir+1][sutun]!=1)
+				cikis_yolu_sayisi++;
+		if(satir>0)  //yukari gidebilir mi?
+			if(satranc_tahtasi[satir-1][sutun]!=-1 && satranc_tahtasi[satir-1][sutun]!=1)
+				cikis_yolu_sayisi++;
+		
+		if(cikis_yolu_sayisi>=2)    	//gidebilecegimiz en az iki yol varsa oncelik sirasina gore birini seceririz			
+		{								//bu noktayi stack'ta tutariz
+			stack_dugum_satir.push(satir);	//burasi yol ayrimidir ve ilerde cikis bulamazsak gerideki en yakin yol ayrimina doneriz
+			stack_dugum_sutun.push(sutun);
+			cikis_yolu_sayisi=0;
+		}		
+		
+		if(satranc_tahtasi[0][7]!=1)
+		{	//yon secerken oncelik sirasi => sag - yukari - sol - asagi			
+			if(saga_git())
+			{
+				stack_cikis_yolum_satir.push(satir);
+				stack_cikis_yolum_sutun.push(sutun);
+				hedefe_git();
+			}
+				
+			else if(yukari_git())
+			{
+				stack_cikis_yolum_satir.push(satir);
+				stack_cikis_yolum_sutun.push(sutun);
+				hedefe_git();
+			}
+
+			else if(sola_git())
+			{
+				stack_cikis_yolum_satir.push(satir);
+				stack_cikis_yolum_sutun.push(sutun);
+				hedefe_git();
+			}
+			else if(asagi_git())
+			{
+				stack_cikis_yolum_satir.push(satir);
+				stack_cikis_yolum_sutun.push(sutun);
+				hedefe_git();
+			}
+			//bu yonlrden hicbirinde ilerleyemezsem stack'ta tuttuğum en son dugume donerim
+			else
+			{
+				if(!stack_dugum_satir.empty() || !stack_dugum_sutun.empty())
+				{
+					satir=stack_dugum_satir.pop();
+					sutun=stack_dugum_sutun.pop();
+					while(true)
+					{
+						if(satir!=stack_cikis_yolum_satir.peek() || sutun!=stack_cikis_yolum_sutun.peek())
+						{
+							stack_cikis_yolum_satir.pop();
+							stack_cikis_yolum_sutun.pop();
+						}
+						else
+						break;
+					}				
+					hedefe_git();
+				}
+				
+				return false;//System.out.println("cikis yolu bulunamadi!!!");
+			}		
+			
+		}
+		else
+		{
+			return true;//System.out.println("problem çözüldü...");								
+		}	
+		return true;
+	}		
+
+	public boolean saga_git()
+	{		//gitmek istedigim yonde siyah pul yoksa ve daha once gidilmemis ise bu yonde ilerleyebilirm
+		if(sutun<7)
+		{			//siyah pul var mi?						//daha once gidilmis mi?
+			if(satranc_tahtasi[satir][sutun+1]!=-1 && satranc_tahtasi[satir][sutun+1]!=1) 
+			{
+				sutun++;
+				satranc_tahtasi[satir][sutun]=1;
+				return true;
+			}
+			else
+				return false;			
+		}
+		else
+			return false;
+		
+	}
+	
+	public boolean sola_git()
+	{
+		if(sutun>0)
+		{			
+			if(satranc_tahtasi[satir][sutun-1]!=-1 && satranc_tahtasi[satir][sutun-1]!=1)
+			{
+				sutun--;
+				satranc_tahtasi[satir][sutun]=1;
+				return true;
+			}
+				
+			else
+				return false;
+		}
+		else
+			return false;		
+	}
+	
+	public boolean asagi_git()
+	{
+		if(satir<7)
+		{			
+			if(satranc_tahtasi[satir+1][sutun]!=-1 && satranc_tahtasi[satir+1][sutun]!=1)
+			{
+				satir++;
+				satranc_tahtasi[satir][sutun]=1;
+				return true;
+			}
+			else
+				return false;
+		}
+		else
+			return false;		
+	}
+	
+	public boolean yukari_git()
+	{
+		if(satir>0)
+		{			
+			if(satranc_tahtasi[satir-1][sutun]!=-1 && satranc_tahtasi[satir-1][sutun]!=1)
+			{
+				satir--;
+				satranc_tahtasi[satir][sutun]=1;
+				return true;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+	}
+
+}
+
+
